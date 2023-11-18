@@ -1,6 +1,5 @@
 package main
 
-//brrr//
 import (
 	"encoding/json"
 	"fmt"
@@ -13,27 +12,34 @@ import (
 )
 
 var jsonData = `[
-    "bulbasaur", 
-    "charmander", 
-    "squirtle", 
-    "pikachu", 
-    "jigglypuff", 
-    "meowth", 
-    "psyduck", 
-    "machop", 
-    "geodude", 
+    "bulbasaur",
+    "charmander",
+    "squirtle",
+    "pikachu",
+    "jigglypuff",
+    "meowth",
+    "psyduck",
+    "machop",
+    "geodude",
     "eevee"
 ]`
+
+// var jsonData = pokemonRandomizer.getRandomPokemonNames(10)
 
 var push_name = "Phuphu!!"
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		greetery(w, push_name)
+		
+		// jsonData, err := pokemonRandomizer.getRandomPokemonNames(10)
+		// if err != nil {
+		// 	fmt.Fprintf(w, "Error getting random Pokémon names: %s", err)
+		// 	return
+		// }
 
 		var pokemonNames []string
-		err := json.Unmarshal([]byte(jsonData), &pokemonNames)
-		if err != nil {
+		if err := json.Unmarshal([]byte(jsonData), &pokemonNames); err != nil {
 			fmt.Fprintf(w, "Error parsing JSON: %s", err)
 			return
 		}
@@ -52,7 +58,7 @@ func main() {
 		wg.Wait()
 	})
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8088", nil))
 }
 
 func greetery(w http.ResponseWriter, name string) {
