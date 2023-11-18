@@ -24,9 +24,11 @@ var jsonData = `[
     "eevee"
 ]`
 
+var push_name = "Phuphu!!"
+
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		greetery(w, "Phuphu!!")
+		greetery(w, push_name)
 
 		var pokemonNames []string
 		err := json.Unmarshal([]byte(jsonData), &pokemonNames)
