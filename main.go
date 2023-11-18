@@ -36,7 +36,7 @@ func main() {
 		// if err != nil {
 		// 	fmt.Fprintf(w, "Error getting random Pokémon names: %s", err)
 		// 	return
-		// }
+		// }d
 
 		var pokemonNames []string
 		if err := json.Unmarshal([]byte(jsonData), &pokemonNames); err != nil {
