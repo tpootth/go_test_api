@@ -58,7 +58,7 @@ func main() {
 		wg.Wait()
 	})
 
-	log.Fatal(http.ListenAndServe(":8088", nil))
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func greetery(w http.ResponseWriter, name string) {
