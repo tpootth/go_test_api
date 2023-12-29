@@ -24,6 +24,7 @@ var jsonData = `[
     "eevee"
 ]`
 
+//update wtf how i cod docker - -"
 // var jsonData = pokemonRandomizer.getRandomPokemonNames(10)
 
 var push_name = "Phuphu!!"
