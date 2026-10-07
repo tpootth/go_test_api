@@ -9,7 +9,24 @@ It only needs the standard library.
 - Fetches run concurrently and results are cached in memory
 - Light and dark mode; works on phones
 
-## Getting started
+## Web app (GitHub Pages)
+
+`web/` holds a static version of the Pokédex that runs entirely in the browser and talks to PokeAPI directly:
+browse by generation and type, search by partial name or number, and open any Pokémon for its Pokédex entry,
+abilities, base stats and shiny artwork. Link straight to one with `#25`.
+
+It is deployed by `.github/workflows/pages.yml` on every push to `master` that touches `web/`, to
+**https://tpootth.github.io/go_test_api/**. One-time setup: *Settings → Pages → Source: GitHub Actions*.
+
+Preview locally:
+
+```bash
+python3 -m http.server -d web 8000   # open http://localhost:8000
+```
+
+## Go server
+
+
 
 ```bash
 go run .
@@ -53,6 +70,7 @@ curl "http://localhost:8080/api/pokemon?q=pikachu"
 .
 ├── main.go                    # HTTP server, routes, handlers
 ├── templates/index.html       # Page template (embedded into the binary)
+├── web/                       # Static web app for GitHub Pages
 └── module/
     ├── greeter/               # Greeting message
     ├── pokemon/               # Cached PokeAPI client
