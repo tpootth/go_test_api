@@ -206,7 +206,7 @@ dialog::backdrop { background: rgba(10, 12, 20, .55); }
 }
 .net-pokemon { cursor: pointer; }
 .net-ring { fill: var(--bg); stroke-width: 2.5; }
-.net-pokemon image { image-rendering: pixelated; pointer-events: none; }
+.net-pokemon image { pointer-events: none; }
 .net-pokemon:hover .net-ring, .net-pokemon:focus-visible .net-ring { stroke-width: 4; }
 .net-pokemon:focus { outline: none; }
 

@@ -104,9 +104,9 @@
     bubbles.append('circle').attr('class', 'net-ring').attr('r', (d) => d.r)
       .attr('stroke', (d) => typeColor(d.p.types[0]));
     bubbles.append('image')
-      .attr('href', (d) => d.p.sprite || d.p.image)
-      .attr('x', (d) => -d.r * 1.3).attr('y', (d) => -d.r * 1.35)
-      .attr('width', (d) => d.r * 2.6).attr('height', (d) => d.r * 2.6)
+      .attr('href', (d) => d.p.image || d.p.sprite)
+      .attr('x', (d) => -d.r * 0.92).attr('y', (d) => -d.r * 0.92)
+      .attr('width', (d) => d.r * 1.84).attr('height', (d) => d.r * 1.84)
       .attr('clip-path', (d) => 'url(#clip-' + d.p.id + ')');
 
     // ---- interaction ----
