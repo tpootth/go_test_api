@@ -25,7 +25,8 @@
   const $ = (id) => document.getElementById(id);
   const grid = $('grid'), meta = $('meta'), more = $('more'), dialog = $('detail');
 
-  const state = { gen: 1, type: '', query: '', ids: [], shown: 0, token: 0 };
+  const network = $('network');
+  const state = { gen: 1, type: '', query: '', ids: [], shown: 0, loaded: [], view: savedView(), token: 0 };
   let current = null; // Pokémon open in the dialog
   let shiny = false;
 
@@ -57,6 +58,7 @@
       heightM: raw.height / 10,
       weightKg: raw.weight / 10,
       image: (art && art.front_default) || raw.sprites.front_default || '',
+      sprite: raw.sprites.front_default || '',
       shinyImage: (art && art.front_shiny) || raw.sprites.front_shiny || '',
     };
   }
@@ -123,6 +125,7 @@
   async function refresh() {
     const token = ++state.token;
     grid.replaceChildren();
+    state.loaded = [];
     more.hidden = true;
     meta.textContent = 'Loading…';
     try {
@@ -132,6 +135,7 @@
       state.shown = 0;
       if (!ids.length) {
         meta.textContent = 'No matches';
+        renderNetwork();
         grid.append(el('div', { class: 'empty' }, [
           el('p', { text: state.query ? 'No Pokémon match “' + state.query + '”.' : 'No Pokémon of this type in this generation.' }),
         ]));
@@ -152,15 +156,20 @@
     updateMeta();
     more.hidden = true;
 
-    await Promise.all(batch.map(async (id, i) => {
+    const results = await Promise.all(batch.map(async (id, i) => {
       try {
         const p = await getPokemon(id);
         if (token === state.token) placeholders[i].replaceWith(card(p));
+        return p;
       } catch (err) {
         placeholders[i].remove();
+        return null;
       }
     }));
-    if (token === state.token) more.hidden = state.shown >= state.ids.length;
+    if (token !== state.token) return;
+    state.loaded.push(...results.filter(Boolean));
+    more.hidden = state.shown >= state.ids.length;
+    renderNetwork();
   }
 
   function updateMeta() {
@@ -201,6 +210,33 @@
     ]);
     node.addEventListener('click', () => openDetail(p.id));
     return node;
+  }
+
+  // ---- views -----------------------------------------------------------
+
+  function savedView() {
+    try { return localStorage.getItem('pokedex-view') === 'network' ? 'network' : 'cards'; } catch (e) { return 'cards'; }
+  }
+
+  function setView(view) {
+    state.view = view;
+    try { localStorage.setItem('pokedex-view', view); } catch (e) { /* storage unavailable */ }
+    for (const b of document.querySelectorAll('[data-view]')) b.setAttribute('aria-pressed', String(b.dataset.view === view));
+    grid.hidden = view !== 'cards';
+    network.hidden = view !== 'network';
+    $('net-caption').hidden = view !== 'network';
+    if (view === 'network') renderNetwork();
+    else if (window.PokeNetwork) window.PokeNetwork.stop();
+  }
+
+  function renderNetwork() {
+    if (state.view !== 'network') return;
+    if (!window.d3 || !window.PokeNetwork) {
+      network.classList.add('is-empty');
+      network.querySelector('.net-empty').textContent = 'The network view could not load (d3.js was blocked). The cards view still works.';
+      return;
+    }
+    window.PokeNetwork.render(network, state.loaded, { onSelect: openDetail });
   }
 
   // ---- detail dialog ----------------------------------------------------
@@ -293,6 +329,9 @@
   });
   $('random').addEventListener('click', () => openDetail(1 + Math.floor(Math.random() * MAX_ID)));
   more.addEventListener('click', loadMore);
+  for (const b of document.querySelectorAll('[data-view]')) b.addEventListener('click', () => setView(b.dataset.view));
+  let resizeTimer;
+  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(renderNetwork, 200); });
 
   $('d-close').addEventListener('click', () => dialog.close());
   $('d-prev').addEventListener('click', () => step(-1));
@@ -311,6 +350,7 @@
   });
 
   renderChips();
+  setView(state.view);
   refresh();
   const deepLink = location.hash.slice(1);
   if (/^\d+$/.test(deepLink)) openDetail(Number(deepLink));
