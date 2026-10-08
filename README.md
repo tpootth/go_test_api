@@ -15,9 +15,10 @@ It only needs the standard library.
 browse by generation and type, search by partial name or number, and open any Pokémon for its Pokédex entry,
 abilities, base stats and shiny artwork. Link straight to one with `#25`.
 
-Switch to the **Network** view for a [d3.js](https://d3js.org) bubble network of the loaded Pokémon: each type
+The page opens on the **Network** view: a [d3.js](https://d3js.org) bubble network of the loaded Pokémon: each type
 is a hub, each Pokémon is a bubble (sized by base stat total) linked to its types, so dual-types sit between
-their two hubs. Hover to highlight connections, drag to rearrange, click a bubble for details.
+their two hubs. Hover to highlight connections, drag to rearrange, click a bubble for details. The **Cards** view
+shows the same Pokémon as a grid.
 
 It is deployed by `.github/workflows/pages.yml`, which publishes `web/` to the `gh-pages` branch on every
 push to `master` that touches `web/`. Live at **https://tpootth.github.io/go_test_api/**.

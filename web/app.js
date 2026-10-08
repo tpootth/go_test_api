@@ -215,7 +215,7 @@
   // ---- views -----------------------------------------------------------
 
   function savedView() {
-    try { return localStorage.getItem('pokedex-view') === 'network' ? 'network' : 'cards'; } catch (e) { return 'cards'; }
+    try { return localStorage.getItem('pokedex-view') === 'cards' ? 'cards' : 'network'; } catch (e) { return 'network'; }
   }
 
   function setView(view) {
