@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Go Pokédex</title>
+  <meta name="description" content="Browse every Pokémon by generation and type, with stats and Pokédex entries.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23fff' stroke='%23222' stroke-width='8'/><path d='M4 50a46 46 0 0 1 92 0z' fill='%23e5484d' stroke='%23222' stroke-width='8'/><circle cx='50' cy='50' r='13' fill='%23fff' stroke='%23222' stroke-width='8'/></svg>">
+  <link rel="preconnect" href="https://pokeapi.co">
+  <link rel="stylesheet" href="style.css?v=141b444">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <h1>Go Pokédex</h1>
+      <p>Every Pokémon from Kanto to Paldea, with live data from PokeAPI.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="controls" aria-label="Filters">
+      <form id="search-form" class="search" role="search">
+        <input id="search" type="search" placeholder="Search by name or number, e.g. pika or 151" autocomplete="off" aria-label="Search Pokémon">
+        <button class="btn" type="submit">Search</button>
+        <button class="btn ghost" type="button" id="random">Random</button>
+      </form>
+
+      <div class="filter-row">
+        <span class="filter-label">Generation</span>
+        <div class="chips" id="gens"></div>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label">Type</span>
+        <div class="chips" id="types"></div>
+      </div>
+    </section>
+
+    <div class="view-bar">
+      <p class="meta" id="meta" aria-live="polite">Loading…</p>
+      <div class="view-toggle" role="group" aria-label="View">
+        <button type="button" data-view="network" aria-pressed="true">Network</button>
+        <button type="button" data-view="cards" aria-pressed="false">Cards</button>
+      </div>
+    </div>
+
+    <section class="grid" id="grid" hidden></section>
+
+    <section class="network" id="network" aria-label="Type network">
+      <svg role="img" aria-label="Network of the loaded Pokémon linked to their types"></svg>
+      <div class="net-tooltip" hidden></div>
+      <div class="net-controls">
+        <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
+        <button type="button" data-zoom="out" aria-label="Zoom out">−</button>
+        <button type="button" data-zoom="reset" aria-label="Reset zoom">⟲</button>
+      </div>
+      <p class="net-empty">Nothing to show yet. Pick a generation or type above.</p>
+    </section>
+    <p class="net-caption" id="net-caption">
+      Each bubble is a Pokémon, sized by its base stat total and linked to its type hubs. Dual-type Pokémon sit between their two types.
+      Click a bubble for details, drag to rearrange, Ctrl/⌘ + scroll or the buttons to zoom.
+    </p>
+    <div class="more"><button class="btn ghost" id="more" hidden>Load more</button></div>
+  </main>
+
+  <dialog id="detail" aria-labelledby="d-name">
+    <div class="d-card" id="d-card">
+      <button class="icon-btn close" id="d-close" aria-label="Close">×</button>
+      <div class="d-art">
+        <span class="dex" id="d-id"></span>
+        <img id="d-img" alt="">
+        <button class="icon-btn shiny" id="d-shiny" aria-pressed="false" title="Show shiny form">✦ Shiny</button>
+      </div>
+      <div class="d-body">
+        <p class="genus" id="d-genus"></p>
+        <h2 id="d-name"></h2>
+        <div class="types" id="d-types"></div>
+        <p class="flavor" id="d-flavor"></p>
+        <dl class="facts">
+          <div><dt>Height</dt><dd id="d-height"></dd></div>
+          <div><dt>Weight</dt><dd id="d-weight"></dd></div>
+          <div><dt>Base total</dt><dd id="d-total"></dd></div>
+        </dl>
+        <h3>Abilities</h3>
+        <p class="abilities" id="d-abilities"></p>
+        <h3>Base stats</h3>
+        <div id="d-stats"></div>
+        <nav class="d-nav">
+          <button class="btn ghost" id="d-prev">← Previous</button>
+          <button class="btn ghost" id="d-next">Next →</button>
+        </nav>
+      </div>
+    </div>
+  </dialog>
+
+  <footer class="wrap footer">
+    Data from <a href="https://pokeapi.co" target="_blank" rel="noopener">PokeAPI</a> ·
+    Source on <a href="https://github.com/tpootth/go_test_api" target="_blank" rel="noopener">GitHub</a>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script src="network.js?v=141b444"></script>
+  <script src="app.js?v=141b444"></script>
+</body>
+</html>
