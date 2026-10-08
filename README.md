@@ -15,8 +15,8 @@ It only needs the standard library.
 browse by generation and type, search by partial name or number, and open any Pokémon for its Pokédex entry,
 abilities, base stats and shiny artwork. Link straight to one with `#25`.
 
-It is deployed by `.github/workflows/pages.yml` on every push to `master` that touches `web/`, to
-**https://tpootth.github.io/go_test_api/**. One-time setup: *Settings → Pages → Source: GitHub Actions*.
+It is deployed by `.github/workflows/pages.yml`, which publishes `web/` to the `gh-pages` branch on every
+push to `master` that touches `web/`. Live at **https://tpootth.github.io/go_test_api/**.
 
 Preview locally:
 
