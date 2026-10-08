@@ -35,8 +35,30 @@
       </div>
     </section>
 
-    <p class="meta" id="meta" aria-live="polite">Loading…</p>
+    <div class="view-bar">
+      <p class="meta" id="meta" aria-live="polite">Loading…</p>
+      <div class="view-toggle" role="group" aria-label="View">
+        <button type="button" data-view="cards" aria-pressed="true">Cards</button>
+        <button type="button" data-view="network" aria-pressed="false">Network</button>
+      </div>
+    </div>
+
     <section class="grid" id="grid"></section>
+
+    <section class="network" id="network" hidden aria-label="Type network">
+      <svg role="img" aria-label="Network of the loaded Pokémon linked to their types"></svg>
+      <div class="net-tooltip" hidden></div>
+      <div class="net-controls">
+        <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
+        <button type="button" data-zoom="out" aria-label="Zoom out">−</button>
+        <button type="button" data-zoom="reset" aria-label="Reset zoom">⟲</button>
+      </div>
+      <p class="net-empty">Nothing to show yet. Pick a generation or type above.</p>
+    </section>
+    <p class="net-caption" id="net-caption" hidden>
+      Each bubble is a Pokémon, sized by its base stat total and linked to its type hubs. Dual-type Pokémon sit between their two types.
+      Click a bubble for details, drag to rearrange, Ctrl/⌘ + scroll or the buttons to zoom.
+    </p>
     <div class="more"><button class="btn ghost" id="more" hidden>Load more</button></div>
   </main>
 
@@ -75,6 +97,8 @@
     Source on <a href="https://github.com/tpootth/go_test_api" target="_blank" rel="noopener">GitHub</a>
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script src="network.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
