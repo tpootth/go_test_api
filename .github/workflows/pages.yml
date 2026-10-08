@@ -23,6 +23,8 @@ jobs:
         run: |
           cp -r web "$RUNNER_TEMP/site"
           touch "$RUNNER_TEMP/site/.nojekyll"
+          # Version asset URLs so browsers never pair a new index.html with stale JS/CSS.
+          sed -i "s/?v=dev/?v=${GITHUB_SHA::7}/g" "$RUNNER_TEMP/site/index.html"
           cd "$RUNNER_TEMP/site"
           git init -q -b gh-pages
           git config user.name "github-actions[bot]"
