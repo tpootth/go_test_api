@@ -1,7 +1,12 @@
+// Package greeter builds the welcome message shown on the home page.
 package greeter
 
-func Greet(name string) string {
-	var a_return = "Hello, " + name + ",This is test for impoort modules in golang."
-	return a_return
-}
+import "fmt"
 
+// Greet returns a friendly greeting for name.
+func Greet(name string) string {
+	if name == "" {
+		name = "Trainer"
+	}
+	return fmt.Sprintf("Hello, %s! Welcome to the Go Pokédex.", name)
+}

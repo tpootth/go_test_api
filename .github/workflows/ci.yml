@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Check formatting
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "These files need gofmt:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test -race -v ./...
+
+      - name: Build
+        run: go build -o bin/poke .
+
+      - name: Smoke test
+        run: |
+          ./bin/poke &
+          sleep 2
+          curl -fsS http://localhost:8080/healthz
+          curl -fsS "http://localhost:8080/api/pokemon?q=pikachu" | tee /tmp/pikachu.json
+          grep -q '"name": "pikachu"' /tmp/pikachu.json
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t go-pokedex .
+      - name: Run container
+        run: |
+          docker run -d --name pokedex -p 8080:8080 go-pokedex
+          sleep 2
+          curl -fsS http://localhost:8080/healthz
+          docker logs pokedex

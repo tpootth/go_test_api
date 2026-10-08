@@ -1,47 +1,33 @@
-package randomizer
+// Package randompoke picks random Pokémon to show.
+package randompoke
 
 import (
-	"encoding/json"
-	"fmt"
 	"math/rand"
-	"net/http"
-	"strconv" // Import the strconv package for string conversion
-	"time"
+	"strconv"
 )
 
-const pokemonAPIURL = "https://pokeapi.co/api/v2/pokemon/"
+// MaxID is the highest National Pokédex number that is picked.
+const MaxID = 1025
 
-func getRandomPokemonNames(count int) (string, error) {
-	rand.Seed(time.Now().UnixNano())
-	pokemonNames := make([]string, count)
-
-	for i := 0; i < count; i++ {
-		id := rand.Intn(898) + 1
-		url := pokemonAPIURL + strconv.Itoa(id) // Convert id to string
-
-		resp, err := http.Get(url)
-		if err != nil {
-			return "", err
-		}
-		defer resp.Body.Close()
-
-		var result map[string]interface{}
-		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-			return "", err
-		}
-
-		name, ok := result["name"].(string)
-		if !ok {
-			return "", fmt.Errorf("invalid data received from API")
-		}
-
-		pokemonNames[i] = name
+// RandomIDs returns count distinct Pokédex IDs (as strings, ready to be used
+// as PokeAPI lookups). count is clamped to the range [0, MaxID].
+func RandomIDs(count int) []string {
+	if count < 0 {
+		count = 0
+	}
+	if count > MaxID {
+		count = MaxID
 	}
 
-	jsonNames, err := json.Marshal(pokemonNames)
-	if err != nil {
-		return "", err
+	seen := make(map[int]struct{}, count)
+	ids := make([]string, 0, count)
+	for len(ids) < count {
+		id := rand.Intn(MaxID) + 1
+		if _, dup := seen[id]; dup {
+			continue
+		}
+		seen[id] = struct{}{}
+		ids = append(ids, strconv.Itoa(id))
 	}
-
-	return string(jsonNames), nil
+	return ids
 }

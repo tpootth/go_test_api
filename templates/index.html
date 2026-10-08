@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Go Pokédex</title>
+  <style>
+    :root {
+      --bg: #f4f5fb; --surface: #ffffff; --text: #1d2130; --muted: #6b7184;
+      --border: #e3e6f0; --accent: #ef5350; --accent-dark: #c62828;
+      --bar-bg: #eceef5; --shadow: 0 6px 20px rgba(29, 33, 48, .08);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #12141c; --surface: #1c1f2b; --text: #eef0f7; --muted: #9aa0b4;
+        --border: #2b2f3e; --bar-bg: #2b2f3e; --shadow: 0 6px 20px rgba(0, 0, 0, .35);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    header {
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: #fff; padding: 40px 16px 72px; text-align: center;
+    }
+    header h1 { margin: 0; font-size: clamp(28px, 5vw, 40px); letter-spacing: -.5px; }
+    header p { margin: 8px 0 0; opacity: .9; }
+    main { max-width: 1120px; margin: -44px auto 48px; padding: 0 16px; }
+
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 12px; box-shadow: var(--shadow);
+    }
+    .toolbar form { display: flex; flex: 1 1 min(320px, 100%); gap: 8px; }
+    .toolbar input {
+      flex: 1; min-width: 0; padding: 10px 14px; font: inherit; color: var(--text);
+      background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    }
+    .btn {
+      display: inline-block; padding: 10px 16px; border-radius: 10px; border: 0;
+      font: inherit; font-weight: 600; text-decoration: none; cursor: pointer;
+      background: var(--accent); color: #fff; white-space: nowrap;
+    }
+    .btn:hover { background: var(--accent-dark); }
+    .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn.ghost:hover { background: var(--bg); }
+
+    .meta { color: var(--muted); font-size: 13px; margin: 16px 4px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
+
+    .card {
+      --type: #a8a77a;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
+      overflow: hidden; box-shadow: var(--shadow); transition: transform .15s ease;
+    }
+    .card:hover { transform: translateY(-4px); }
+    .art {
+      position: relative; aspect-ratio: 4 / 3; display: grid; place-items: center;
+      background: radial-gradient(circle at 50% 60%, color-mix(in srgb, var(--type) 55%, transparent), color-mix(in srgb, var(--type) 18%, transparent));
+    }
+    .art img { width: 70%; height: 90%; object-fit: contain; filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+    .dex { position: absolute; top: 10px; right: 14px; font-weight: 700; color: var(--text); opacity: .55; }
+    .body { padding: 14px 16px 18px; }
+    .body h2 { margin: 0 0 8px; font-size: 20px; }
+    .types { display: flex; gap: 6px; margin-bottom: 12px; }
+    .type {
+      padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      color: #fff; background: var(--type); text-shadow: 0 1px 1px rgba(0,0,0,.25);
+    }
+    .facts { display: flex; gap: 16px; font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+    .facts b { color: var(--text); }
+    .abilities { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+    .stat { display: grid; grid-template-columns: 56px 30px 1fr; align-items: center; gap: 8px; font-size: 12px; }
+    .stat span:first-child { color: var(--muted); font-weight: 600; }
+    .bar { height: 6px; background: var(--bar-bg); border-radius: 99px; overflow: hidden; }
+    .bar i { display: block; height: 100%; background: var(--type); border-radius: 99px; }
+
+    .empty {
+      text-align: center; padding: 48px 16px; color: var(--muted);
+      background: var(--surface); border: 1px dashed var(--border); border-radius: 18px;
+    }
+    footer { text-align: center; color: var(--muted); font-size: 13px; padding-bottom: 32px; }
+    footer a { color: inherit; }
+
+    .t-normal{--type:#a8a77a}.t-fire{--type:#ee8130}.t-water{--type:#6390f0}.t-electric{--type:#f7d02c}
+    .t-grass{--type:#7ac74c}.t-ice{--type:#96d9d6}.t-fighting{--type:#c22e28}.t-poison{--type:#a33ea1}
+    .t-ground{--type:#e2bf65}.t-flying{--type:#a98ff3}.t-psychic{--type:#f95587}.t-bug{--type:#a6b91a}
+    .t-rock{--type:#b6a136}.t-ghost{--type:#735797}.t-dragon{--type:#6f35fc}.t-dark{--type:#705746}
+    .t-steel{--type:#b7b7ce}.t-fairy{--type:#d685ad}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Go Pokédex</h1>
+    <p>{{.Greeting}}</p>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <form action="/" method="get">
+        <input type="search" name="q" value="{{.Query}}" placeholder="Search by name or number, e.g. pikachu, 151" aria-label="Search Pokémon">
+        <button class="btn" type="submit">Search</button>
+      </form>
+      <a class="btn ghost" href="/?random=1">🎲 Random team</a>
+      <a class="btn ghost" href="/">Starter team</a>
+    </div>
+
+    <p class="meta">
+      {{len .Pokemon}} Pokémon
+      {{- if .Failed}} · {{.Failed}} not found{{end}}
+      · loaded in {{.Elapsed}} · {{.Generated}}
+    </p>
+
+    {{if .Pokemon}}
+    <section class="grid">
+      {{range .Pokemon}}
+      <article class="card t-{{.PrimaryType}}">
+        <div class="art">
+          <span class="dex">#{{printf "%04d" .ID}}</span>
+          {{if .Image}}<img src="{{.Image}}" alt="{{title .Name}}" loading="lazy">{{end}}
+        </div>
+        <div class="body">
+          <h2>{{title .Name}}</h2>
+          <div class="types">
+            {{range .Types}}<span class="type t-{{.}}">{{title .}}</span>{{end}}
+          </div>
+          <div class="facts">
+            <span>Height <b>{{printf "%.1f" .HeightM}} m</b></span>
+            <span>Weight <b>{{printf "%.1f" .WeightKg}} kg</b></span>
+          </div>
+          <div class="abilities">
+            {{range $i, $a := .Abilities}}{{if $i}} · {{end}}{{title $a}}{{end}}
+          </div>
+          {{range .Stats}}
+          <div class="stat">
+            <span>{{statName .Name}}</span><span>{{.Value}}</span>
+            <div class="bar"><i style="width: {{statPct .Value}}%"></i></div>
+          </div>
+          {{end}}
+        </div>
+      </article>
+      {{end}}
+    </section>
+    {{else}}
+    <div class="empty">
+      <p>No Pokémon found{{if .Query}} for “{{.Query}}”{{end}}.</p>
+      <a class="btn" href="/">Back to starter team</a>
+    </div>
+    {{end}}
+  </main>
+
+  <footer>
+    Data from <a href="https://pokeapi.co" target="_blank" rel="noopener">PokeAPI</a> ·
+    JSON at <a href="/api/pokemon">/api/pokemon</a>
+  </footer>
+</body>
+</html>
